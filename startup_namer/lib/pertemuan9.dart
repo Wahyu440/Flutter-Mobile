@@ -1,24 +1,6 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const Pertemuan9(title: 'Flutter Demo Home Page Pertemuan 9'),
-    );
-  }
-}
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:startup_namer/main.dart';
 
 class Pertemuan9 extends StatefulWidget {
   const Pertemuan9({super.key, required this.title});
@@ -78,6 +60,19 @@ class _Pertemuan9State extends State<Pertemuan9> {
               "Submit",
               style: TextStyle(
                 color: Colors.white
+              ),
+            )),
+            ElevatedButton(onPressed: () async {
+              SharedPreferences pref = await SharedPreferences.getInstance();
+              await pref.setInt("is_login", 0);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const MyHomePage(title: "Halooo",)),
+              );
+            }, child: Text(
+              "Logout",
+              style: TextStyle(
+                  color: Colors.white
               ),
             ))
           ],
