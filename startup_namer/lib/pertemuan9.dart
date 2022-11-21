@@ -65,10 +65,10 @@ class _Pertemuan9State extends State<Pertemuan9> {
             ElevatedButton(onPressed: () async {
               SharedPreferences pref = await SharedPreferences.getInstance();
               await pref.setInt("is_login", 0);
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const MyHomePage(title: "Halooo",)),
-              );
+              // Navigator.pushReplacement(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => const MyHomePage(title: "Halooo",)),
+              // );
             }, child: Text(
               "Logout",
               style: TextStyle(
