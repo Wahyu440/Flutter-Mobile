@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'mahasiswa/mahasiswa_get.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -11,6 +14,14 @@ class HomeDrawer extends StatefulWidget {
 
   @override
   State<HomeDrawer> createState() => _HomeDrawerState();
+}
+
+class MyHttpOverrides extends HttpOverrides{
+  @override
+  HttpClient createHttpClient(SecurityContext? context){
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
+  }
 }
 
 class _HomeDrawerState extends State<HomeDrawer> {
@@ -39,22 +50,15 @@ class _HomeDrawerState extends State<HomeDrawer> {
               ListTile(
                 title: const Text('Home'),
                 onTap: () {
-                  // Update the state of the app.
-                  // ...
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => HomeDrawer()));
                 },
               ),
               ListTile(
-                title: const Text('Inbox'),
+                title: const Text('Mahasiswa'),
                 onTap: () {
-                  // Update the state of the app.
-                  // ...
-                },
-              ),
-              ListTile(
-                title: const Text('Setting'),
-                onTap: () {
-                  // Update the state of the app.
-                  // ...
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Mahasiswa_get()));
                 },
               ),
             ],
