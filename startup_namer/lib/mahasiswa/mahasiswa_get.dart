@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:startup_namer/homeDrawer.dart';
+import 'package:startup_namer/mahasiswa/mahasiswa_update.dart';
 import 'mahasiswa_add.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -26,11 +27,30 @@ class _Mahasiswa_getState extends State<Mahasiswa_get> {
       if(response.statusCode == 200) {
         final data = jsonDecode(response.body);
         setState(() {
+          _get.clear();
           _get = data;
         });
       }
     } catch (e){
       print(e);
+    }
+  }
+
+  Future _deleteDataMhs(String id, nim_progmob) async {
+    final http.Response response = await http.post(
+      Uri.parse('https://kpsi.fti.ukdw.ac.id/api/progmob/mhs/delete'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'id': id,
+        'nim_progmob': nim_progmob
+      }),
+    );
+    if (response.statusCode == 200) {
+      _getDataMhs();
+    } else {
+      throw Exception('Failed to load response');
     }
   }
 
@@ -79,21 +99,62 @@ class _Mahasiswa_getState extends State<Mahasiswa_get> {
           ],
         ),
       ),
-      body: ListView.builder(
-        itemCount: _get.length,
-          itemBuilder: (context,index){
-          return Padding(
-            padding: const EdgeInsets.all(10),
-            child: ListTile(
-              shape: RoundedRectangleBorder(
-                side: BorderSide(color: Colors.black45, width: 1),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              title: Text(_get[index]['nim'] + "-" + _get[index]['nama']),
-              subtitle: Text(_get[index]['email']),
-            ),
-          );
-          }),
+      body: RefreshIndicator(
+        onRefresh: _getDataMhs,
+        child: ListView.builder(
+            itemCount: _get.length,
+            itemBuilder: (context,index){
+              return Padding(
+                padding: const EdgeInsets.all(10),
+                child: ListTile(
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(color: Colors.black45, width: 1),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  title: Text(_get[index]['nim'] + "-" + _get[index]['nama']),
+                  subtitle: Text(_get[index]['email']),
+                  trailing: PopupMenuButton(
+                    icon: Icon(Icons.more_vert),
+                    onSelected: (result) {
+                      if (result == 'edit') {
+                        Navigator.push(
+                          context,
+                          //Untuk kirim data dari list data mahasiswa
+                          MaterialPageRoute(builder: (context) => Mahasiswa_update(
+                            id: _get[index]['id'].toString(),
+                            nim: _get[index]['nim'].toString(),
+                            nama: _get[index]['nama'].toString(),
+                            alamat: _get[index]['alamat'].toString(),
+                            email: _get[index]['email'].toString(),
+                            foto: _get[index]['foto'].toString(),
+                          )),
+                        );
+                      }
+                    },
+                    itemBuilder: (context) {
+                      return[
+                        PopupMenuItem(
+                          child: Text('Edit'),
+                          value: 'edit',
+                          // onTap: () {
+                          //   Navigator.push(context,
+                          //       MaterialPageRoute(builder: (context) => Mahasiswa_update()));
+                          // },
+                        ),
+                        PopupMenuItem(
+                          child: Text('Delete'),
+                          value: 'delete',
+                          onTap: () async {
+                            _deleteDataMhs(_get[index]['id'].toString(), '72200440');
+                          },
+                        ),
+                      ];
+                    },
+                  ),
+                ),
+              );
+            }),
+      )
     );
   }
 }
